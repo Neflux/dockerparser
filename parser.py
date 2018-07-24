@@ -13,7 +13,7 @@ rows, columns = os.popen('stty size', 'r').read().split() # Useful for text form
 # Argparse
 
 parser = argparse.ArgumentParser(description='Dockerfile inspector')
-parser.add_argument("p", nargs="?",default="./", help="Path of the subfolder containing the Dockerfile")
+parser.add_argument("p", nargs="?",default="./", help="Path of the subfolder containing the Dockerfile (default is ./)")
 parser.add_argument("-v", "--verbose", help="Verbose mode",action="store_true")
 args = parser.parse_args()
 
