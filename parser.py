@@ -6,9 +6,9 @@ import regex as re
 from utility import bcolors
 from check import Inspector
 
-__FILENAME__ = "Dockerfile"
-
 rows, columns = os.popen('stty size', 'r').read().split() # Useful for text formatting
+
+__FILENAME__ = "Dockerfile"
 
 # Argparse
 
