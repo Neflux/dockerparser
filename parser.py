@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 import regex as re
+import fnmatch
 
 from utility import bcolors
 from check import Inspector
@@ -38,17 +39,33 @@ else:
 
 # Dockerfile context analysis (scraping)
 
+dockerignore = dpath+".dockerignore"
+filterFiles = False
+if os.path.isfile(dockerignore):
+    print(".dockerignore detected")
+    with open(dpath+"/.dockerignore") as f:
+        ignore_list = f.readlines()
+    filterFiles = True
+
 context = os.walk(dpath, topdown=True)
 dirscontext, filecontext = ([] for i in range(2))
-exclude = set([]) #TODO: Needs .dockerignore support, feasible?
 for root, dirs, files in context:
-    dirs[:] = [d for d in dirs if d not in exclude]
     dirscontext.extend(dirs)
-    if(root == dpath):
-        filecontext.extend(x for x in files)
-    else:
-        filecontext.extend(root[len(dpath):] + "/"+ x for x in files)
-        
+    for f in files:
+        if f == ".dockerignore" or f == "Dockerfile":
+            continue
+        ignorethisfile = False
+        if filterFiles:
+            for pattern in ignore_list:
+                if fnmatch.fnmatch(f, pattern):
+                    ignorethisfile = True
+                    break
+        if not ignorethisfile:
+            if(root == dpath):
+                filecontext.append(f)
+            else:
+                filecontext.append(root[len(dpath):] + "/"+ f)
+
 if args.verbose:
     print("\nDirectories: " + str(len(dirscontext)))
     for dir in dirscontext:
@@ -57,6 +74,8 @@ if args.verbose:
     print("\nFiles: " + str(len(filecontext)))
     for file in filecontext:
         print("\t"+file)
+
+exit()
 
 # Dockerfile loading, cleaning
 with open(dpath+"/"+__FILENAME__) as f:
