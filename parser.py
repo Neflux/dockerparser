@@ -42,7 +42,8 @@ else:
 dockerignore = dpath+".dockerignore"
 filterFiles = False
 if os.path.isfile(dockerignore):
-    print(".dockerignore detected")
+    if args.verbose:
+        print(".dockerignore detected")
     with open(dpath+"/.dockerignore") as f:
         ignore_list = f.readlines()
     filterFiles = True
@@ -75,48 +76,61 @@ if args.verbose:
     for file in filecontext:
         print("\t"+file)
 
-exit()
-
 # Dockerfile loading, cleaning
 with open(dpath+"/"+__FILENAME__) as f:
     content = f.readlines()
 
-dockerfile = []
+dockerfile, multiline = ([] for i in range(2))
 for line in content:
-    newline = line.strip()
-    if(len(newline) > 0):
-        if(newline[0] != "#"):
-            newline = line
-            # Removing the \n
-            dockerfile.append(newline[:-1])
+    line = line.strip()
+    if(len(line) > 0):
+        if line[0] != "#":
+            if line[len(line)-1] == "\\":
+                multiline.append(line.split("\\", 1)[0])
+            elif len(multiline) > 0:
+                multiline.append(line)
+                dockerfile.append(("".join(multiline),len(multiline)))
+                multiline = []
+            else:
+                dockerfile.append((line,1))
+
 if len(content) == 0:
     raise SystemExit("This Dockerfile looks empty, make sure you specified the appropriate subfolder")
 
-if args.verbose and len(dockerfile) > 0:
-    print("\nInstructions --> layers: "+ str(len(dockerfile)))
-    for line in dockerfile:
-        print("\t"+line)
-
 # Dictionary based on instructions
 
-dockerdict = {}
-for idx, inst in enumerate(dockerfile):
+layers = 0
+dockerdict, linesdict = ({} for i in range(2))
+for idx, tup in enumerate(dockerfile):
+    inst = tup[0]
+    lines = tup[1]
     key = inst.split(" ")[0]
     dockerdict.setdefault(key,[]).append((idx+1, inst))
+    linesdict[idx+1]=lines
+    if key in ["RUN","COPY","ADD"]:
+        layers += 1
+
+if args.verbose and len(dockerfile) > 0:
+    print("\nInstructions: "+ str(len(dockerfile))+" --> layers: " + str(layers))
+    for inst, lines in dockerfile:
+        if lines > 1:
+            print("\t"+inst+ (" # instruction split among " + str(lines) + " lines"))
+        else:
+            print("\t"+inst)
 
 # Context & Docker intersection analysis (could be useful later on)
 
 fileocc = []
 dirsocc = []
-for line in dockerfile:
+for inst, lines in dockerfile:
     #TODO: Weak logic, needs improvement
     for file in filecontext:
-        if file in line:
-            fileocc.append((file,line))
+        if file in inst:
+            fileocc.append((file,inst))
     for dir in dirscontext:
         # Regex makes sure that files are not recognized as dirs (prefix)
-        if re.match( r'.*'+re.escape(dir)+r'(?!\/).*', line):
-            dirsocc.append((dir,line))
+        if re.match( r'.*'+re.escape(dir)+r'(?!\/).*', inst):
+            dirsocc.append((dir,inst))
 
 if args.verbose:
     if(len(fileocc) > 0) or (len(dirsocc) > 0):
@@ -142,9 +156,11 @@ print()
 
 inspector = Inspector(dockerdict)
 
-inspector.undefinedImageVersions()
+"""inspector.undefinedImageVersions()
 inspector.remoteFetches()
 inspector.pipes()
+inspector.longRuns(100)"""
+inspector.aptget()
 # ... 
 
 print()
