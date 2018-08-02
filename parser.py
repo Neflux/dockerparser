@@ -81,18 +81,23 @@ with open(dpath+"/"+__FILENAME__) as f:
     content = f.readlines()
 
 dockerfile, multiline = ([] for i in range(2))
+instructionList = []
 for line in content:
     line = line.strip()
     if(len(line) > 0):
+        # If it isn't a comment
         if line[0] != "#":
             if line[len(line)-1] == "\\":
                 multiline.append(line.split("\\", 1)[0])
             elif len(multiline) > 0:
                 multiline.append(line)
-                dockerfile.append(("".join(multiline),len(multiline)))
+                multistring = "".join(multiline)
+                dockerfile.append(multistring)
+                instructionList.append(multistring)
                 multiline = []
             else:
-                dockerfile.append((line,1))
+                dockerfile.append(line)
+                instructionList.append(line)
 
 if len(content) == 0:
     raise SystemExit("This Dockerfile looks empty, make sure you specified the appropriate subfolder")
@@ -100,29 +105,23 @@ if len(content) == 0:
 # Dictionary based on instructions
 
 layers = 0
-dockerdict, linesdict = ({} for i in range(2))
-for idx, tup in enumerate(dockerfile):
-    inst = tup[0]
-    lines = tup[1]
+dockerdict = {}
+for idx, inst in enumerate(dockerfile):
     key = inst.split(" ")[0]
     dockerdict.setdefault(key,[]).append((idx+1, inst))
-    linesdict[idx+1]=lines
     if key in ["RUN","COPY","ADD"]:
         layers += 1
 
 if args.verbose and len(dockerfile) > 0:
     print("\nInstructions: "+ str(len(dockerfile))+" --> layers: " + str(layers))
-    for inst, lines in dockerfile:
-        if lines > 1:
-            print("\t"+inst+ (" # instruction split among " + str(lines) + " lines"))
-        else:
-            print("\t"+inst)
+    for inst in dockerfile:
+        print("\t"+inst)
 
 # Context & Docker intersection analysis (could be useful later on)
 
 fileocc = []
 dirsocc = []
-for inst, lines in dockerfile:
+for inst in dockerfile:
     #TODO: Weak logic, needs improvement
     for file in filecontext:
         if file in inst:
@@ -154,13 +153,13 @@ if args.verbose:
 
 print()    
 
-inspector = Inspector(dockerdict)
+inspector = Inspector(dockerdict,instructionList)
 
-"""inspector.undefinedImageVersions()
+#inspector.undefinedImageVersions()
 inspector.remoteFetches()
+#inspector.aptget()
 inspector.pipes()
-inspector.longRuns(100)"""
-inspector.aptget()
+#inspector.longRuns(100)
 # ... 
 
 print()

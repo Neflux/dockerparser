@@ -6,10 +6,7 @@ ADD . /src
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 RUN apt-get update
-RUN apt-get install -y \
-    package-bar \
-    package-baz \
-    package-foo
+RUN apt-get install -y f g h a b s d g
 
 # This pipe could fail
 RUN wget -O - https://some.site | wc -l > /number

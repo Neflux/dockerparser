@@ -4,23 +4,45 @@ from lxml import etree
 
 from utility import bcolors
 
+# Populated by Inspector
+
+class Improvement:
+
+    def __init__(self, message, explanation, originalLines, suggestedEdit="", highlightedPart=""):
+        self.message = message
+        self.explanation = explanation
+        self.originalLines = originalLines
+        self.suggestedEdit = suggestedEdit
+        self.highlightedPart = highlightedPart
+
+    def __str__(self):
+        result =    bcolors.WARNING+"===> " + self.message + " (#" + ", #".join(str(x) for x in self.originalLines) +")"+bcolors.ENDC
+        result +=   "\nExplanation: " + self.explanation
+        result +=   "\n\nOriginal instruction"+("s" if len(self.originalLines) > 1 else "")+":\n\t" + "\n\t".join(self.instructionList[x-1] for x in self.originalLines)
+        result +=   "\n\nSuggested edit:\n\t" + self.suggestedEdit
+        return result
+        
+
 class Inspector:
 
-    def __init__(self, instructionMap):
-        self.dockerdict = instructionMap
+    def __init__(self, _dict, _list):
+        self.dockerdict = _dict
+        Improvement.instructionList = _list
+        self.improvements = []
 
     # Check for unsafe RUN pipes
     def pipes(self):
         if "RUN" in self.dockerdict:
             for idx, inst in self.dockerdict["RUN"]:
                 if "|" in inst and "set -o pipefail" not in inst:
-                    print(bcolors.WARNING+"===> Unsafe pipe inside a RUN instruction detected (#"+str(idx)+")!\n"+bcolors.ENDC)
-                    print("Explanation: if you want this command to fail due to an error at any stage in the pipe, prepend 'set -o pipefail &&' to ensure that an unexpected error prevents the build from inadvertently succeeding.\n")
-                    print("Original instruction: " + inst)
-                    print("Suggested edit: " + inst.replace("RUN", "RUN "+bcolors.HEADER+"set -o pipefail &&"+bcolors.ENDC) + "\n")
+                    self.improvements.append(Improvement(
+                        "Unsafe pipe inside a RUN instruction detected",
+                        "If you want this command to fail due to an error at any stage in the pipe, prepend 'set -o pipefail &&' to ensure that an unexpected error prevents the build from inadvertently succeeding.",
+                        [idx], inst, "set -o pipefail &&"
+                    ))
 
     # Help function: it retrieves the instructions associated to the main one (ADD) that fetches a compressed file remotely
-    def getSubsequentExtractionInstructions(self,file, path, index):
+    def getSubsequentExtractionInstructions(self, file, path, index):
         results = []
         if "RUN" in self.dockerdict:
             for idx, inst in self.dockerdict["RUN"]:
@@ -36,22 +58,15 @@ class Inspector:
                 # This regex pattern needs to be improved
                 parsedADD = re.search(r'ADD\s(.*\/(.*)\.(?:tar|xz|zip|gz))\s(.*)', inst)
                 if parsedADD:
-                    print(bcolors.WARNING+"===> Unhealthy file download inside an ADD instruction detected (#"+str(idx)+")!\n"+bcolors.ENDC)
-                    print("Explanation: because image size matters, using ADD to fetch packages from remote URLs is strongly discouraged; you should use curl or wget instead. That way you can delete the files you no longer need after they’ve been extracted and you don’t have to add another layer in your image.\n")
-                    
                     url = parsedADD.group(1)
                     filename = parsedADD.group(2)
                     # Removing the last char, it could be and extra backslash
                     path = parsedADD.group(3)[:-1]
                     extralines = self.getSubsequentExtractionInstructions(filename,path,idx)
-                    
-                    print("Original instruction/s:\n\t" + inst)
-
                     newSuggestedInstructions = []
                     incompleteSuggestion = 0
                     for x,y in extralines:
                         # Print those extra lines
-                        print("\t"+y)
                         if re.match( r'RUN tar -xJf (?:.+) -C (?:.+)$', y):
                             newSuggestedInstructions.append("tar -xJC "+ path)
                         elif re.match( r'RUN make -C (?:.+) all$', y):
@@ -76,7 +91,14 @@ class Inspector:
                         if incompleteSuggestion > 0:
                             print("Couldn't come up with a complete conversion (missing " + str(incompleteSuggestion) + " operation/s)\n")
 
-                    print("\nSuggested edit (single RUN instruction):\n\t" + bcolors.HEADER + finalSuggestion + bcolors.ENDC +"\n")
+                    #self.improvements.append
+                    
+                    originalLines = [x-1 for x,y in extralines]
+                    originalLines.append(idx)
+                    print(Improvement("Unhealthy file download inside an ADD instruction detected",
+                        "because image size matters, using ADD to fetch packages from remote URLs is strongly discouraged; you should use curl or wget instead. That way you can delete the files you no longer need after they’ve been extracted and you don’t have to add another layer in your image.",
+                        originalLines, finalSuggestion, ""))
+                    
 
     # Looks for FROM instructions that don't define a specific image version and use "latest" instead
     def undefinedImageVersions(self):
@@ -136,8 +158,16 @@ class Inspector:
                 print(bcolors.WARNING+"===> Unhealthy apt-get logic inside RUN instructions detected (#" + str(update)+" and #"+str(idx)+")!\n"+bcolors.ENDC)
                 print("Explanation: Using apt-get update alone in a RUN statement causes caching issues and subsequent apt-get install instructions fail.")
                 print("Original instruction: " + inst)
-                print("Suggested edit: RUN "+bcolors.HEADER+"apt-get update && "+bcolors.ENDC + inst[4:])
             # Merging multiple install commands and sorting alphabetically (removing duplicates)
+            packages = []
             for idx, inst in aptgetInstructions:
                 offset = len("apt-get install")+inst.find("apt-get install")
-                print(inst[offset:])
+                packages.extend([x for x in inst[offset:].strip().split(" ") if x[0] != "-"])
+            packages = sorted(set(packages))
+            first = packages[0]
+            if len(packages) > 1:
+                last = packages[len(packages)-1]
+                packages = ["\t"+x+" \\\n" for x in packages[1:-1]]
+                finalAppendix = "".join(packages)
+                finalSuggestion = "RUN apt-get update && apt-get install -y " + first + " \\\n" + finalAppendix
+                print("Suggested edit: " + finalSuggestion + "\t" + last)
