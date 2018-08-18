@@ -100,28 +100,7 @@ class Inspector:
                         originalLines, finalSuggestion, ""))
                     
 
-    # Looks for FROM instructions that don't define a specific image version and use "latest" instead
-    def undefinedImageVersions(self):
-        if "FROM" in self.dockerdict:
-            for idx, inst in self.dockerdict["FROM"]:
-                parsedFROM = re.search(r'FROM (.+):latest',inst)
-                if parsedFROM:
-                    package =  parsedFROM.group(1)
-                    print(bcolors.WARNING+"===> Undefined version of base image detected (#" + str(idx)+")!\n"+bcolors.ENDC)
-                    print("Explanation: your build can suddenly break if that image gets updated, making the program not reproducible")
-                    print("Original instruction: " + inst)
-                    print("Suggested edit (example): loading..", end="\r")
-
-                    # Not that useful but at least it's not a random suggestion
-                    url = "https://hub.docker.com/r/library/"+package+"/tags/"            
-                    response = urlopen(url)
-                    htmlparser = etree.HTMLParser()
-                    tree = etree.parse(response, htmlparser)
-                    # Hoping that the xPath won't change in the near future
-                    div = tree.xpath("/html/body/div/main/div[3]/div[2]/div[2]/div/div/div/div/div[2]/div[1]")[0]
-                    
-                    print("Suggested edit (example): FROM "+package+":"+bcolors.HEADER+div.text+bcolors.ENDC+ "\n")
-
+    
     def longRuns(self,maxChars):
         if "RUN" in self.dockerdict:
             for idx, inst in self.dockerdict["RUN"]:
