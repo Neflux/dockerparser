@@ -11,35 +11,25 @@ from utility import bcolors
 log.basicConfig(filename='inspector.log', level=log.DEBUG)
 
 class Instruction(str):
-    def __init__(self, instruction, multiline=[]):
-        self.instruction = str(instruction)
+    def __init__(self, text, multiline=[]):
+        self.text = str(text)
         self.multiline = multiline
 
     def __get__(self, instance, owner):
-        return self.instruction
+        return self.text
 
     def __set__(self, instance, value):
-        self.new_instruction = value
+        self.new_text = value
 
     def get_updated_instruction(self):
-        return self.new_instruction
-
-class Forge():
-
-    def __init__(self, params):
-        for lines, edits in params:
-            if all(isinstance(x, int) for x in lines):
-                for line in lines:
-                    self.dockerfile.pop(line)
-                    self.dockerfile.insert(lines[0],"".join(edits))
-            elif all(isinstance(x, str) for x in lines):
-                for line in lines:
-                    self.dockerfile = self.dockerfile.replace(line,"")        
+        return self.new_text
 
 class Inspector():
 
     def __init__(self, **params):
         self.console_rows, self.console_columns = os.popen('stty size', 'r').read().split()
+        self.checks = []
+        self.replaces = []
 
         if params.get("scope") is None:
             raise SystemExit('Specify Dockerfile directory with "scope" parameter of costructor')
@@ -47,9 +37,7 @@ class Inspector():
         self.scope = params.get("scope")
         self.path = self.find_dockerfile()
         self.context, self.filecontext, self.dirscontext = self.get_context()
-        Forge.dockerfile = self._dockerfile = self.extract_instructions()
         self.dockerdict = self.process_instructions()
-        print(self.dockerdict)
         self.intersection_analysis()
 
     def find_dockerfile(self):
@@ -172,40 +160,28 @@ class Inspector():
             for dir, line in dirsocc:
                 print("\t\t"+line.replace(dir,bcolors.HEADER+dir+bcolors.ENDC))
 
+    def implement(self, func):
+        self.checks.append(func)
+
+    def update(self):
+        for x,y in self.replaces:
+            for key, value in self.dockerdict.items():
+                if value == x
+                    self.dockerdict[key] = y
+                    break
+
+        self.replaces = []
+    
+    def replace(a,b):
+        self.replaces.append((a,b))
+
     def run(self, **params):
         log.info("Starting optimization routine")
+        print(self.dockerdict)
+        for fnc in self.checks:
+            fnc(self)
+            self.update()
         
-        # Static checks
-        self.undefined_image_versions()
-        #inspector.remoteFetches()
-        #inspector.aptget()
-
-        # Final checks
-        #inspector.pipes()
-        #inspector.longRuns(100)
-
-    # Looks for FROM instructions that don't define a specific image version and use "latest" instead
-    def undefined_image_versions(self):
-        if "FROM" in self.dockerdict:
-            for idx, inst in self.dockerdict["FROM"]:
-                parsedFROM = re.search(r'FROM (.+):latest',inst)
-                if parsedFROM:
-                    package =  parsedFROM.group(1)
-                    print(bcolors.WARNING+"===> Undefined version of base image detected (#" + str(idx)+")!\n"+bcolors.ENDC)
-                    print("Explanation: your build can suddenly break if that image gets updated, making the program not reproducible")
-                    print("Original instruction: " + inst)
-                    print("Suggested edit (example): loading..", end="\r")
-
-                    # Not that useful but at least it's not a random suggestion
-                    url = "https://hub.docker.com/r/library/"+package+"/tags/"            
-                    response = urlopen(url)
-                    htmlparser = etree.HTMLParser()
-                    tree = etree.parse(response, htmlparser)
-                    # Hoping that the xPath won't change in the near future
-                    div = tree.xpath("/html/body/div/main/div[3]/div[2]/div[2]/div/div/div/div/div[2]/div[1]")[0]
-                    
-                    print("Suggested edit (example): FROM "+package+":"+bcolors.HEADER+div.text+bcolors.ENDC+ "\n")
-
     @property
     def dockerfile(self):
         log.info("Accessing dockerfile")
