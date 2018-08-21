@@ -3,34 +3,71 @@ import sys
 import fnmatch
 import regex as re
 import logging as log
-
 from utility import bcolors
 
 log.basicConfig(filename='inspector.log', level=log.DEBUG)
 
-    
-
 class Instruction(str):
-    def __init__(self, text, multiline=[]):
-        self.text = str(text)
-        self.multiline = multiline
+    def __new__(cls, text, original_indexes):
+        return super(Instruction, cls).__new__(cls, text)
+
+    def __init__(self, text, original_indexes):
+        self.key = text.split(" ")[0]
+        if not isinstance(original_indexes, list):
+            original_indexes = [original_indexes]
+        self.original_indexes = original_indexes
+        #TODO: print(self.original_indexes)
+
+    def __repr__(self):
+        return super(Instruction, self).__repr__()
+    
+    def __str__(self):
+        return super(Instruction, self).__str__()
 
     def __get__(self, instance, owner):
-        return self.text
+        return super(Instruction, self).__get__()
 
-    def __set__(self, instance, value):
+    """@property
+    def key(self):
+        return self.key"""
+
+    """def __set__(self, instance, value):
         self.new_text = value
 
     def get_updated_instruction(self):
-        return self.new_text
+        return self.new_text"""
 
+class Dockerfile(list):
+    def __init__(self):
+        pass
+        
+    """def append(self, instruction):
+        super(Dockerfile, self).append(instruction)"""
+
+    def __repr__(self):
+        return "".join(x for x in self)  
+    
+    def __str__(self):
+        return self.__repr__()                                                                                                         
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return super(Dockerfile, self).__getitem__(key)
+        elif isinstance(key, str):
+            return [x for x in self if x.key == key]
+
+    def __setitem__(self, key, value):
+        if isinstance(key, int):
+            super(Dockerfile, self).__setitem__(key, value)
+
+    @property
+    def layers(self):
+        return len([x for x in self if x.key in ["RUN","COPY","ADD"]])
+            
 class Inspector():
-
     def __init__(self, **params):
         self.console_rows, self.console_columns = os.popen('stty size', 'r').read().split()
-        self.checks = []
-        self.replaces = []
-        self.removes = []
+        self.checks, self.replaces, self.removes, self.inserts = ([] for i in range(4))
 
         if params.get("scope") is None:
             raise SystemExit('Specify Dockerfile directory with "scope" parameter of costructor')
@@ -39,8 +76,7 @@ class Inspector():
         self.path = self.find_dockerfile()
         self.context, self.filecontext, self.dirscontext = self.get_context()
         self.dockerfile = self.extract_instructions()
-        self.dockerdict = self.process_instructions()
-        self.intersection_analysis()
+        """self.intersection_analysis()"""
 
     def find_dockerfile(self):
         context = os.walk(self.scope, topdown=True)
@@ -100,42 +136,36 @@ class Inspector():
         with open(self.path+"/Dockerfile") as f:
             content = f.readlines()
 
-        dockerfile, multiline = ([] for i in range(2))
-        #instructionList = []
-        for line in content:
-            line = line.strip()
+        dockerfile = Dockerfile()
+        multiline = []
+        start_index = -1
+        for idx, original_line in enumerate(content):
+            line = original_line.strip()
             if(len(line) > 0):
                 if line[0] != "#":
                     if line[len(line)-1] == "\\":
                         multiline.append(line.split("\\", 1)[0])
+                        if start_index == -1: start_index = idx
                     elif len(multiline) > 0:
                         multiline.append(line)
-                        dockerfile.append(Instruction("".join(multiline),multiline))
+                        dockerfile.append(Instruction("".join(multiline),[i for i in range(start_index,idx)]))
                         multiline = []
+                        start_index = -1
                     else:
-                        dockerfile.append(Instruction(line))
+                        dockerfile.append(Instruction(line,idx))
+                else:
+                    dockerfile.append(Instruction(line,idx))
         
         if len(content) == 0:
             log.critical("This Dockerfile looks empty, make sure you specified the appropriate subfolder")
             raise SystemExit("This Dockerfile looks empty, make sure you specified the appropriate subfolder")
 
-        return dockerfile
-
-    def process_instructions(self):
-        layers = 0
-        dockerdict = {}
-        for idx, inst in enumerate(self.dockerfile):
-            key = inst.split(" ")[0]
-            dockerdict.setdefault(key,[]).append((idx+1, inst))
-            if key in ["RUN","COPY","ADD"]:
-                layers += 1
-
-        if len(self.dockerfile) > 0:
-            print("\nInstructions: "+ str(len(self.dockerfile))+" --> layers: " + str(layers))
-            for inst in self.dockerfile:
+        if len(dockerfile) > 0:
+            print("\nInstructions: "+ str(len(dockerfile))+" --> layers: " + str(dockerfile.layers))
+            for inst in dockerfile:
                 print("\t"+inst)
 
-        return dockerdict
+        return dockerfile
 
     def intersection_analysis(self):
         fileocc, dirsocc = ([] for i in range(2))
@@ -197,14 +227,27 @@ class Inspector():
             # Update dockefile
             self.dockerfile.remove(x)
 
+        for x,y in self.inserts:
+
+            # Update dockerdict
+            key = x.split(" ")[0]
+            dockerdict.setdefault(key,[]).append((idx+1, inst))
+            
+            # Update dockefile
+            self.dockerfile.remove(x)
+
         self.replaces = []
         self.removes = []
+        self.inserts = []
     
     def replace(self,a,b):
         self.replaces.append((a,b))
     
     def remove(self,a):
         self.removes.append(a)
+
+    def insert_at(self, a, idx):
+        self.inserts.append((a, idx))
 
     def run(self, **params):
         log.info("Starting optimization routine")
@@ -283,7 +326,7 @@ def remote_fetches(inspector):
             original=inst, optimization=finalSuggestion)
 
 # Help function: it retrieves the apt-get update instruction index
-def getPrecedingUpdate(inspector, installIndex):
+def get_preceding_update(inspector, installIndex):
     result = 0
     if "RUN" not in inspector.dockerdict:
         return -2
@@ -305,19 +348,22 @@ def apt_get(inspector):
     inst = aptgetInstructions[0][1]
     
     # Checking update-install logic
-    update = getPrecedingUpdate(inspector, idx)
-    if update == -1:
-        inspector.format(title="Multiple apt-get update commands",
-        explanation="fix your Dockerfile")
+    update = get_preceding_update(inspector, idx)
+    if update == -1 or update == -2:
+        log.info("Multiple apt-get update commands")
     elif update != 0:
         inspector.format(title="Unhealthy apt-get logic inside RUN instructions",id=idx,
         explanation="Using apt-get update alone in a RUN statement causes caching issues and subsequent apt-get install instructions fail.")
     
     # Merging multiple install commands and sorting alphabetically (removing duplicates)
     packages = []
+    firstid = -1
     for idx, inst in aptgetInstructions:
+        if firstid == -1:
+            firstid = idx
         offset = len("apt-get install")+inst.find("apt-get install")
         packages.extend([x for x in inst[offset:].strip().split(" ") if x[0] != "-"])
+        inspector.remove(inst)
     packages = sorted(set(packages))
     first = packages[0]
 
@@ -331,4 +377,7 @@ def apt_get(inspector):
         explanation="Using apt-get update alone in a RUN statement causes caching issues and subsequent apt-get install instructions fail.",
         original="\n\t".join(x[1] for x in aptgetInstructions), 
         optimization=finalSuggestion)
+
+        inspector.remove(inspector.dockerfile[update-1])
+        inspector.insert_at(finalSuggestion,firstid)
 
