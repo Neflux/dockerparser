@@ -44,9 +44,7 @@ def remote_fetches(inspector):
 # Help function: it retrieves the apt-get update instruction index
 def get_preceding_update(inspector, installIndex):
     result = 0
-    if "RUN" not in inspector.dockerdict:
-        return -2
-    for idx, inst in inspector.dockerdict["RUN"]:
+    for inst in inspector.dockerfile["RUN"]:
         # List update instruction always comes before the install
         if inst.find("apt-get update") != -1:
             # If there are multiple updates return an error integer
@@ -56,30 +54,40 @@ def get_preceding_update(inspector, installIndex):
             result = idx
     return result
 
+def first_FROM(inspector):
+    #TODO: test
+    return inspector.dockerfile["FROM"][0].index
+
 def apt_get(inspector):
-    if "RUN" not in inspector.dockerdict:
+
+    if not inspector.dockerfile["RUN"]: 
+        #TODO: is this check valid?
         return
-    aptgetInstructions = [(idx, inst) for idx, inst in inspector.dockerdict["RUN"] if inst.find("apt-get install") != -1 ]
-    idx = aptgetInstructions[0][0]
-    inst = aptgetInstructions[0][1]
+
+    first_update_idx = -1
+    for inst in inspector.dockerfile["RUN"]: 
+        if inst.find("apt-get update") != -1:
+            if inst.find(" install ") == -1:
+                first_update_idx = inst.index
+                inspector.format(title="Unhealthy apt-get logic inside RUN instructions",id=inst.index,
+                explanation="Using apt-get update alone in a RUN statement causes caching issues and subsequent apt-get install instructions fail.")
+                inspector.remove(inst)
     
-    # Checking update-install logic
-    update = get_preceding_update(inspector, idx)
-    if update == -1 or update == -2:
-        log.info("Multiple apt-get update commands")
-    elif update != 0:
-        inspector.format(title="Unhealthy apt-get logic inside RUN instructions",id=idx,
-        explanation="Using apt-get update alone in a RUN statement causes caching issues and subsequent apt-get install instructions fail.")
-    
+    if first_update_idx == -1:
+        first_update_idx = first_FROM()
+
+    aptget_instructions = [inst for inst in inspector.dockerfile["RUN"] if inst.find("apt-get install") != -1 ]
+        
     # Merging multiple install commands and sorting alphabetically (removing duplicates)
     packages = []
-    firstid = -1
-    for idx, inst in aptgetInstructions:
-        if firstid == -1:
-            firstid = idx
+    for inst in aptget_instructions:
+
+        inspector.remove(inst)
         offset = len("apt-get install")+inst.find("apt-get install")
         packages.extend([x for x in inst[offset:].strip().split(" ") if x[0] != "-"])
-        inspector.remove(inst)
+        
+    inspector.remove(aptget_instructions)
+        
     packages = sorted(set(packages))
     first = packages[0]
 
@@ -89,10 +97,9 @@ def apt_get(inspector):
         finalAppendix = "".join(packages)
         finalSuggestion = "RUN apt-get update && apt-get install -y " + first + " \\\n" + finalAppendix  + "\t" + last
         
-        inspector.format(title="Unhealthy apt-get logic inside RUN instructions",id=idx,
+        inspector.format(title="Unhealthy apt-get logic inside RUN instructions",id=0,
         explanation="Using apt-get update alone in a RUN statement causes caching issues and subsequent apt-get install instructions fail.",
-        original="\n\t".join(x[1] for x in aptgetInstructions), 
+        original="\n\t".join(aptget_instructions), 
         optimization=finalSuggestion)
 
-        inspector.remove(inspector.dockerfile[update-1])
-        inspector.insert_at(finalSuggestion,firstid)
+        inspector.insert(9,finalSuggestion)

@@ -3,79 +3,9 @@ import sys
 import fnmatch
 import regex as re
 import logging as log
-from utility import bcolors
+from utility import *
 
 log.basicConfig(filename='inspector.log', level=log.DEBUG)
-
-class Instruction(str):
-    def __new__(cls, text, original_indexes):
-        return super(Instruction, cls).__new__(cls, text)
-
-    def __init__(self, text, original_indexes):
-        self.key = text.split(" ")[0]
-        if not isinstance(original_indexes, list):
-            original_indexes = [original_indexes]
-        self.original_indexes = original_indexes
-
-    def __repr__(self):
-        return super(Instruction, self).__repr__()
-    
-    def __str__(self):
-        return super(Instruction, self).__str__()
-
-    def __get__(self, instance, owner):
-        return super(Instruction, self).__get__()
-
-    @property
-    def index(self):
-        return self.original_indexes
-
-    """def __set__(self, instance, value):
-        self.new_text = value
-
-    def get_updated_instruction(self):
-        return self.new_text"""
-
-class Dockerfile(list):
-    def __init__(self):
-        pass
-
-    def __repr__(self):
-        final_repr = bcolors.BOLD+"\nline\tinstruction"+bcolors.ENDC
-        for inst in self:
-            final_repr += "\n"+",".join(str(x+1) for x in inst.index)+"\t"
-            if inst.key == "#":
-                final_repr += bcolors.OKGREEN+inst+bcolors.ENDC
-            elif inst.key in ["RUN","COPY","ADD"]:
-                final_repr += bcolors.HEADER+inst+bcolors.ENDC
-            else:
-                final_repr += inst
-        return final_repr
-    
-    def __str__(self):
-        return self.__repr__()                                                                                                         
-
-    def __getitem__(self, key):
-        if isinstance(key, int):
-            return super(Dockerfile, self).__getitem__(key)
-        elif isinstance(key, str):
-            return [x for x in self if x.key == key]
-
-    def replace(self, x, y):
-        for idx, inst in enumerate(self):
-            if inst == x:
-                self[idx] = Instruction(y, inst.index)
-                break
-
-    # Number of instructions generating a layer
-    @property
-    def layers(self):
-        return len([x for x in self if x.key in ["RUN","COPY","ADD"]])
-    
-    # Number of non-comment instructions
-    @property
-    def len(self):
-        return len([x for x in self if x.key != "#"])
             
 class Inspector():
     def __init__(self, **params):
@@ -214,8 +144,12 @@ class Inspector():
         for x in self.removes:
             self.dockerfile.remove(x)
 
-        for x,y in self.inserts:
-            self.dockerfile.insert_at(x,y)
+        for idx, x in self.inserts:
+            print("prima")
+            print(self.dockerfile)
+            self.dockerfile.insert(idx, x)
+            print("dopo")
+            print(self.dockerfile)
 
         self.replaces = []
         self.removes = []
@@ -227,8 +161,8 @@ class Inspector():
     def remove(self,a):
         self.removes.append(a)
 
-    def insert_at(self, a, idx):
-        self.inserts.append((a, idx))
+    def insert(self, idx, a):
+        self.inserts.append((idx, a))
 
     def run(self, **params):
         log.info("Starting optimization routine")
@@ -237,6 +171,7 @@ class Inspector():
             log.info("function: "+check.__name__)
             check(self)
             self.update()
+            print(self.dockerfile)
 
         print("\nOptimized version:")
         print(self.dockerfile)
@@ -247,7 +182,11 @@ class Inspector():
             pass
         message = bcolors.WARNING+"\n===> " + str(kwargs["title"]) + bcolors.ENDC
         if "id" in kwargs:
-            message += "("+"#".join(str(x+1) for x in kwargs["id"]) + ")!"+ bcolors.ENDC
+            ids = kwargs["id"]
+            if not isinstance(ids, list):
+                print("conservo")
+                ids = [ids]
+            message += "("+"#".join(str(x+1) for x in ids) + ")!"+ bcolors.ENDC
         if "explanation" in kwargs:
             message += "\nExplanation: " + str(kwargs["explanation"])
         if "original" in kwargs and "optimization" in kwargs:
