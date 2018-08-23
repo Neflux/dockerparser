@@ -41,52 +41,31 @@ def remote_fetches(inspector):
             explanation="Because image size matters, using ADD to fetch packages from remote URLs is strongly discouraged; you should use curl or wget instead. That way you can delete the files you no longer need after they’ve been extracted and you don’t have to add another layer in your image.",
             original=inst, optimization=finalSuggestion)
 
-# Help function: it retrieves the apt-get update instruction index
-def get_preceding_update(inspector, installIndex):
-    result = 0
-    for inst in inspector.dockerfile["RUN"]:
-        # List update instruction always comes before the install
-        if inst.find("apt-get update") != -1:
-            # If there are multiple updates return an error integer
-            if result != 0:
-                result = -1
-                break
-            result = idx
-    return result
-
-def first_FROM(inspector):
-    #TODO: test
-    return inspector.dockerfile["FROM"][0].index
-
 def apt_get(inspector):
 
     if not inspector.dockerfile["RUN"]: 
         #TODO: is this check valid?
         return
 
-    first_update_idx = -1
-    for inst in inspector.dockerfile["RUN"]: 
+    first_idx = -1
+    for inst in inspector.dockerfile["RUN"]:
         if inst.find("apt-get update") != -1:
             if inst.find(" install ") == -1:
-                first_update_idx = inst.index
+                first_idx = inst.index
                 inspector.format(title="Unhealthy apt-get logic inside RUN instructions",id=inst.index,
                 explanation="Using apt-get update alone in a RUN statement causes caching issues and subsequent apt-get install instructions fail.")
                 inspector.remove(inst)
-    
-    if first_update_idx == -1:
-        first_update_idx = first_FROM()
 
     aptget_instructions = [inst for inst in inspector.dockerfile["RUN"] if inst.find("apt-get install") != -1 ]
         
     # Merging multiple install commands and sorting alphabetically (removing duplicates)
     packages = []
     for inst in aptget_instructions:
-
+        if first_idx == -1:
+            first_idx = inst.index
         inspector.remove(inst)
         offset = len("apt-get install")+inst.find("apt-get install")
         packages.extend([x for x in inst[offset:].strip().split(" ") if x[0] != "-"])
-        
-    inspector.remove(aptget_instructions)
         
     packages = sorted(set(packages))
     first = packages[0]
@@ -97,9 +76,9 @@ def apt_get(inspector):
         finalAppendix = "".join(packages)
         finalSuggestion = "RUN apt-get update && apt-get install -y " + first + " \\\n" + finalAppendix  + "\t" + last
         
-        inspector.format(title="Unhealthy apt-get logic inside RUN instructions",id=0,
-        explanation="Using apt-get update alone in a RUN statement causes caching issues and subsequent apt-get install instructions fail.",
+        inspector.format(title="Unsorted packages of 'apt-get install' operation",id=0,
+        explanation="Whenever possible, ease later changes by sorting multi-line arguments alphanumerically. This helps to avoid duplication of packages and make the list much easier to update. This also makes PRs a lot easier to read and review. Adding a space before a backslash (\) helps as well.",
         original="\n\t".join(aptget_instructions), 
         optimization=finalSuggestion)
 
-        inspector.insert(9,finalSuggestion)
+        inspector.insert(first_idx, finalSuggestion, len(packages)+1)

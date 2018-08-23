@@ -91,13 +91,15 @@ class Inspector():
                         if start_index == -1: start_index = idx
                     elif len(multiline) > 0:
                         multiline.append(line)
-                        dockerfile.append(Instruction("".join(multiline),[i for i in range(start_index,idx)]))
+                        dockerfile.append(Instruction("".join(multiline),start_index,idx))
                         multiline = []
                         start_index = -1
                     else:
                         dockerfile.append(Instruction(line,idx))
                 else:
                     dockerfile.append(Instruction(line,idx))
+            else:
+                dockerfile.append(Instruction("< empty line >",idx))
         
         if len(content) == 0:
             log.critical("This Dockerfile looks empty, make sure you specified the appropriate subfolder")
@@ -144,16 +146,10 @@ class Inspector():
         for x in self.removes:
             self.dockerfile.remove(x)
 
-        for idx, x in self.inserts:
-            print("prima")
-            print(self.dockerfile)
-            self.dockerfile.insert(idx, x)
-            print("dopo")
-            print(self.dockerfile)
+        for idx, x, size in self.inserts:
+            self.dockerfile.insert(idx, x, size)
 
-        self.replaces = []
-        self.removes = []
-        self.inserts = []
+        self.replaces, self.removes, self.inserts = ([] for i in range(3))
     
     def replace(self,a,b):
         self.replaces.append((a,b))
@@ -161,8 +157,8 @@ class Inspector():
     def remove(self,a):
         self.removes.append(a)
 
-    def insert(self, idx, a):
-        self.inserts.append((idx, a))
+    def insert(self, idx, a, size=1):
+        self.inserts.append((idx, a, size))
 
     def run(self, **params):
         log.info("Starting optimization routine")
@@ -171,7 +167,6 @@ class Inspector():
             log.info("function: "+check.__name__)
             check(self)
             self.update()
-            print(self.dockerfile)
 
         print("\nOptimized version:")
         print(self.dockerfile)
@@ -184,7 +179,6 @@ class Inspector():
         if "id" in kwargs:
             ids = kwargs["id"]
             if not isinstance(ids, list):
-                print("conservo")
                 ids = [ids]
             message += "("+"#".join(str(x+1) for x in ids) + ")!"+ bcolors.ENDC
         if "explanation" in kwargs:

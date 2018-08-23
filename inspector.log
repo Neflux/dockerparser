@@ -1717,3 +1717,542 @@ INFO:root:Dockerfile path: ./docker/
 INFO:root:.dockerignore detected
 INFO:root:Starting optimization routine
 INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: undefined_image_versions
+INFO:root:function: pipes
+INFO:root:function: remote_fetches
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: undefined_image_versions
+INFO:root:function: pipes
+INFO:root:function: remote_fetches
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: undefined_image_versions
+INFO:root:function: pipes
+INFO:root:function: remote_fetches
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: undefined_image_versions
+INFO:root:function: pipes
+INFO:root:function: remote_fetches
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: undefined_image_versions
+INFO:root:function: pipes
+INFO:root:function: remote_fetches
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: undefined_image_versions
+INFO:root:function: pipes
+INFO:root:function: remote_fetches
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: undefined_image_versions
+INFO:root:function: pipes
+INFO:root:function: remote_fetches
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: undefined_image_versions
+INFO:root:function: pipes
+INFO:root:function: remote_fetches
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: undefined_image_versions
+INFO:root:function: pipes
+INFO:root:function: remote_fetches
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: undefined_image_versions
+INFO:root:function: pipes
+INFO:root:function: remote_fetches
+INFO:root:function: apt_get
+INFO:root:Dockerfile path: ./docker/
+INFO:root:.dockerignore detected
+INFO:root:Starting optimization routine
+INFO:root:function: undefined_image_versions
+INFO:root:function: pipes
+INFO:root:function: remote_fetches
+INFO:root:function: apt_get
