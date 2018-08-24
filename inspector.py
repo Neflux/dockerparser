@@ -1,6 +1,7 @@
 import os
 import sys
 import fnmatch
+import queue
 import regex as re
 import logging as log
 from utility import *
@@ -10,7 +11,8 @@ log.basicConfig(filename='inspector.log', level=log.DEBUG)
 class Inspector():
     def __init__(self, **params):
         self.console_rows, self.console_columns = os.popen('stty size', 'r').read().split()
-        self.checks, self.replaces, self.removes, self.inserts = ([] for i in range(4))
+        self.checks = []
+        self.actions = queue.Queue()
 
         if params.get("scope") is None:
             raise SystemExit('Specify Dockerfile directory with "scope" parameter of costructor')
@@ -81,25 +83,24 @@ class Inspector():
 
         dockerfile = Dockerfile()
         multiline = []
-        start_index = -1
+        shift = 0
         for idx, original_line in enumerate(content):
             line = original_line.strip()
             if(len(line) > 0):
                 if line[0] != "#":
                     if line[len(line)-1] == "\\":
                         multiline.append(line.split("\\", 1)[0])
-                        if start_index == -1: start_index = idx
                     elif len(multiline) > 0:
+                        shift += len(multiline)
                         multiline.append(line)
-                        dockerfile.append(Instruction("".join(multiline),start_index,idx))
+                        dockerfile.append(Instruction("".join(multiline),idx-shift))
                         multiline = []
-                        start_index = -1
                     else:
-                        dockerfile.append(Instruction(line,idx))
+                        dockerfile.append(Instruction(line,idx-shift))
                 else:
-                    dockerfile.append(Instruction(line,idx))
+                    dockerfile.append(Instruction(line,idx-shift))
             else:
-                dockerfile.append(Instruction("< empty line >",idx))
+                dockerfile.append(Instruction("< empty line >",idx-shift))
         
         if len(content) == 0:
             log.critical("This Dockerfile looks empty, make sure you specified the appropriate subfolder")
@@ -139,26 +140,24 @@ class Inspector():
     def implement(self, func):
         self.checks.append(func)
 
-    def update(self):
-        for x,y in self.replaces:
-            self.dockerfile.replace(x,y)
+    def apply(self):
+        while not self.actions.empty():
+            items = self.actions.get()
+            func = items[0]
+            args = items[1:]
+            func(*args)
 
-        for x in self.removes:
-            self.dockerfile.remove(x)
-
-        for idx, x, size in self.inserts:
-            self.dockerfile.insert(idx, x, size)
-
-        self.replaces, self.removes, self.inserts = ([] for i in range(3))
+    # Replace Instruction x with string y
+    def replace(self,x,y):
+        self.actions.put((self.dockerfile.replace,x,y))
     
-    def replace(self,a,b):
-        self.replaces.append((a,b))
-    
-    def remove(self,a):
-        self.removes.append(a)
+    # Remove Instruction x
+    def remove(self, x):
+        self.actions.put((self.dockerfile.remove,x))
 
-    def insert(self, idx, a, size=1):
-        self.inserts.append((idx, a, size))
+    # Insert Instruction x
+    def insert(self, idx, x):
+        self.actions.put((self.dockerfile.insert,idx,x))
 
     def run(self, **params):
         log.info("Starting optimization routine")
@@ -166,7 +165,7 @@ class Inspector():
         for check in self.checks:
             log.info("function: "+check.__name__)
             check(self)
-            self.update()
+            self.apply()
 
         print("\nOptimized version:")
         print(self.dockerfile)
@@ -177,10 +176,7 @@ class Inspector():
             pass
         message = bcolors.WARNING+"\n===> " + str(kwargs["title"]) + bcolors.ENDC
         if "id" in kwargs:
-            ids = kwargs["id"]
-            if not isinstance(ids, list):
-                ids = [ids]
-            message += "("+"#".join(str(x+1) for x in ids) + ")!"+ bcolors.ENDC
+            message += "(#"+str(kwargs["id"])+")!"+bcolors.ENDC
         if "explanation" in kwargs:
             message += "\nExplanation: " + str(kwargs["explanation"])
         if "original" in kwargs and "optimization" in kwargs:
