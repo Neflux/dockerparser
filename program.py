@@ -1,7 +1,7 @@
 from inspector import Inspector
 from examples import *
 
-ins = Inspector(scope="../docker")
+ins = Inspector(scope="./docker")
 
 ins.implement(undefined_image_versions)
 ins.implement(pipes)
