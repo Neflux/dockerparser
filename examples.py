@@ -12,8 +12,8 @@ def undefined_image_versions(ins):
         package = parsedFROM.group(1)
         ins.format(title="Undefined version of base image", id=inst.index, 
         explanation="Your build can suddenly break if that image gets updated, making the program not reproducible",
-        original=inst, optimization="FROM "+package+":<version>")
-        ins.replace(inst,"FROM "+package+":<version>")
+        original=inst, optimization="FROM "+package+":<latest version fetched from the internet>")
+        ins.replace(inst,"FROM "+package+":<latest version fetched from the internet>")
 
 # Check for unsafe RUN pipes
 def pipes(ins):
@@ -68,7 +68,7 @@ def apt_get(inspector):
         if first_idx == -1:
             first_idx = inst.index
         offset = len("apt-get install")+inst.find("apt-get install")
-        packages.extend([x for x in inst[offset:].strip().split(" ") if x[0] != "-"])
+        packages.extend([x for x in inst[offset:].strip().split(" ") if x != "" and x[0] != "-"])
         inspector.remove(inst)
 
     packages = sorted(set(packages))
@@ -76,9 +76,9 @@ def apt_get(inspector):
 
     if len(packages) > 1:
         last = packages[len(packages)-1]
-        packages = ["\t"+x+" \\\n" for x in packages[1:-1]]
+        packages = ["\t"+x+"=<latest version fetched from the internet> \\\n" for x in packages[1:-1]]
         finalAppendix = "".join(packages)
-        finalSuggestion = "RUN apt-get update && apt-get install -y " + first + " \\\n" + finalAppendix  + "\t" + last
+        finalSuggestion = "RUN apt-get update && apt-get install -y " + first + "=<latest version fetched from the internet> \\\n" + finalAppendix  + "\t" + last+ "=<latest version fetched from the internet>"
         
         inspector.format(title="Unsorted packages of 'apt-get install' operation",id=inst.index,
         explanation="Whenever possible, ease later changes by sorting multi-line arguments alphanumerically. This helps to avoid duplication of packages and make the list much easier to update. This also makes PRs a lot easier to read and review. Adding a space before a backslash (\) helps as well.",

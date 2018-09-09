@@ -161,12 +161,16 @@ class Inspector():
     def run(self, **params):
         log.info("Starting optimization routine")
         
-        for check in self.checks:
+        for idx, check in enumerate(self.checks):
             log.info("function: "+check.__name__)
+            #TODO: fix queue lock and synchronization
+            self.actions.queue.clear()
             check(self)
             if not self.actions.empty():
-                if query_yes_no("\n["+check.__name__+"] Do you want to apply this optimization?"):
+                if query_yes_no("\nDo you want to apply this optimization?"):
                     self.apply()
+            elif idx != (len(self.checks)-1):
+                input("\nCannot apply an incomplete optimization, manual intervetion required. Press Enter to proceed to the next one")
 
         print("\nOptimized version:")
         print(self.dockerfile)
