@@ -21,7 +21,7 @@ class Inspector():
         self.path = self.find_dockerfile()
         self.context, self.filecontext, self.dirscontext = self.get_context()
         self.dockerfile = self.extract_instructions()
-        """self.intersection_analysis()"""
+        #self.intersection_analysis()
 
     def find_dockerfile(self):
         context = os.walk(self.scope, topdown=True)
@@ -176,15 +176,11 @@ class Inspector():
             pass
         message = bcolors.WARNING+"\n===> " + str(kwargs["title"]) + bcolors.ENDC
         if "id" in kwargs:
-            message += "(#"+str(kwargs["id"])+")!"+bcolors.ENDC
+            message += "(line "+str(kwargs["id"]+1)+")!"+bcolors.ENDC
+        if "original" in kwargs and "optimization" in kwargs:
+            message += "\nInstruction: " + str(kwargs["original"]) +"\n"
         if "explanation" in kwargs:
             message += "\nExplanation: " + str(kwargs["explanation"])
         if "original" in kwargs and "optimization" in kwargs:
-            message += "\n\nOriginal version: " + str(kwargs["original"])
-            message += "\nSuggested edit: " + str(kwargs["optimization"])
+            message += "\n\nSuggested edit: " + str(kwargs["optimization"])
         print(message)
-        
-""" @property
-    def dockerfile(self):
-        log.info("Accessing dockerfile")
-        return self._dockerfile"""

@@ -6,22 +6,9 @@ class Instruction(str):
         self.key = text.split(" ")[0]
         self.index = index
 
-    """def __repr__(self):
-        return super(Instruction, self).__repr__()
-    
-    def __str__(self):
-        return super(Instruction, self).__str__()
-
-    def __get__(self, instance, owner):
-        return super(Instruction, self).__get__()"""
-
 class Dockerfile(list):
     def __init__(self):
         pass
-
-    """    def append(self, instruction):
-        instruction.index = len(self)
-        super(Dockerfile,self).append(instruction)"""
 
     def __repr__(self):
         final_repr = bcolors.BOLD+"\nIndex\tInstruction"+bcolors.ENDC

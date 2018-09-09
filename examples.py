@@ -10,20 +10,20 @@ def undefined_image_versions(inspector):
         if not parsedFROM:
             continue
         package = parsedFROM.group(1)
-        inspector.format(title="Undefined version of base image", id=idx, 
+        inspector.format(title="Undefined version of base image", id=inst.index, 
         explanation="Your build can suddenly break if that image gets updated, making the program not reproducible",
         original=inst, optimization="FROM "+package+":<version>")
         inspector.replace(inst,"FROM "+package+":<version>")
 
 # Check for unsafe RUN pipes
-def pipes(inspector):
-    for idx, inst in enumerate(inspector.dockerfile["RUN"]):
+def pipes(ins):
+    for idx, inst in enumerate(ins.dockerfile["RUN"]):
         if "|" in inst and "set -o pipefail" not in inst:
             opt = inst.replace("RUN","RUN set -o pipefail &&")
-            inspector.format(title="Unsafe pipe inside a RUN instruction", id=idx, 
+            ins.format(title="Unsafe pipe inside a RUN instruction", id=inst.index, 
             explanation="If you want this command to fail due to an error at any stage in the pipe, prepend 'set -o pipefail &&' to ensure that an unexpected error prevents the build from inadvertently succeeding.",
             original=inst, optimization=opt)
-            inspector.replace(inst,opt)
+            ins.replace(inst,opt)
 
 # Check for unhealthy ADDs that fetch a compressed file from a remote origin
 def remote_fetches(inspector):
@@ -37,15 +37,13 @@ def remote_fetches(inspector):
         path = parsedADD.group(3)[:-1]  # Removing the last char, it could be and extra backslash
 
         finalSuggestion = "RUN set -o pipefail && mkdir -p " + path + " \\\n\t&& curl -SL " + url + " \\\n\t*** your extraction instructions ***"
-        inspector.format(title="Unhealthy file download inside an ADD instruction detected", id=idx,
+        inspector.format(title="Unhealthy file download inside an ADD instruction detected", id=inst.index,
             explanation="Because image size matters, using ADD to fetch packages from remote URLs is strongly discouraged; you should use curl or wget instead. That way you can delete the files you no longer need after they’ve been extracted and you don’t have to add another layer in your image.",
             original=inst, optimization=finalSuggestion)
 
 def apt_get(inspector):
-
     if not inspector.dockerfile["RUN"]: 
         return
-
     first_idx = -1
     for inst in inspector.dockerfile["RUN"]:
         if inst.find("apt-get update") != -1:
@@ -63,9 +61,9 @@ def apt_get(inspector):
     for inst in aptget_instructions:
         if first_idx == -1:
             first_idx = inst.index
-        inspector.remove(inst)
         offset = len("apt-get install")+inst.find("apt-get install")
         packages.extend([x for x in inst[offset:].strip().split(" ") if x[0] != "-"])
+        inspector.remove(inst)
 
     packages = sorted(set(packages))
     first = packages[0]
@@ -76,7 +74,7 @@ def apt_get(inspector):
         finalAppendix = "".join(packages)
         finalSuggestion = "RUN apt-get update && apt-get install -y " + first + " \\\n" + finalAppendix  + "\t" + last
         
-        inspector.format(title="Unsorted packages of 'apt-get install' operation",id=0,
+        inspector.format(title="Unsorted packages of 'apt-get install' operation",id=inst.index,
         explanation="Whenever possible, ease later changes by sorting multi-line arguments alphanumerically. This helps to avoid duplication of packages and make the list much easier to update. This also makes PRs a lot easier to read and review. Adding a space before a backslash (\) helps as well.",
         original="\n\t".join(aptget_instructions), 
         optimization=finalSuggestion)
