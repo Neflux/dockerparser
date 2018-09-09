@@ -1,3 +1,4 @@
+import sys
 class Instruction(str):
     def __new__(cls, text, index):
         return super(Instruction, cls).__new__(cls, text)
@@ -75,6 +76,7 @@ class Dockerfile(list):
     def len(self):
         return len([x for x in self if x.key != "#"])
 
+
 # Console colors
 class bcolors:
     HEADER = '\033[95m'
@@ -85,3 +87,26 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+
+def query_yes_no(question, default="yes"):
+        valid = {"yes": True, "y": True, "ye": True,
+                "no": False, "n": False}
+        if default is None:
+            prompt = " [y/n] "
+        elif default == "yes":
+            prompt = " [Y/n] "
+        elif default == "no":
+            prompt = " [y/N] "
+        else:
+            raise ValueError("invalid default answer: '%s'" % default)
+
+        while True:
+            sys.stdout.write(question + prompt)
+            choice = input().lower()
+            if default is not None and choice == '':
+                return valid[default]
+            elif choice in valid:
+                return valid[choice]
+            else:
+                sys.stdout.write("Please respond with 'yes' or 'no' "
+                                "(or 'y' or 'n').\n")

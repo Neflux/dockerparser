@@ -4,16 +4,16 @@ from utility import bcolors
 from urllib.request import urlopen 
 
 # Looks for FROM instructions that don't define a specific image version and use "latest" instead
-def undefined_image_versions(inspector):
-    for idx, inst in enumerate(inspector.dockerfile["FROM"]):
-        parsedFROM = re.search(r'FROM (.+):latest',inst)
+def undefined_image_versions(ins):
+    for inst in ins.dockerfile["FROM"]:
+        parsedFROM = re.match(r'FROM ([^:]+)(:latest|$)',inst)
         if not parsedFROM:
             continue
         package = parsedFROM.group(1)
-        inspector.format(title="Undefined version of base image", id=inst.index, 
+        ins.format(title="Undefined version of base image", id=inst.index, 
         explanation="Your build can suddenly break if that image gets updated, making the program not reproducible",
         original=inst, optimization="FROM "+package+":<version>")
-        inspector.replace(inst,"FROM "+package+":<version>")
+        ins.replace(inst,"FROM "+package+":<version>")
 
 # Check for unsafe RUN pipes
 def pipes(ins):
@@ -54,6 +54,12 @@ def apt_get(inspector):
                 explanation="Using apt-get update alone in a RUN statement causes caching issues and subsequent apt-get install instructions fail.")
                 inspector.remove(inst)
 
+    """for inst in inspector.dockerfile["RUN"]:
+        parserAPTGET = re.search(r'apt-get install(?:\s-y\s+)?(.*?(?:\s+))(&&|$)', inst)
+        if not parserAPTGET:
+            continue
+        package = parserAPTGET.group(1)
+    """
     aptget_instructions = [inst for inst in inspector.dockerfile["RUN"] if inst.find("apt-get install") != -1 ]
         
     # Merging multiple install commands and sorting alphabetically (removing duplicates)

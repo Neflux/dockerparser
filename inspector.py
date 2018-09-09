@@ -1,5 +1,4 @@
 import os
-import sys
 import fnmatch
 import queue
 import regex as re
@@ -165,10 +164,17 @@ class Inspector():
         for check in self.checks:
             log.info("function: "+check.__name__)
             check(self)
-            self.apply()
+            if not self.actions.empty():
+                if query_yes_no("\n["+check.__name__+"] Do you want to apply this optimization?"):
+                    self.apply()
 
         print("\nOptimized version:")
         print(self.dockerfile)
+
+        with open("Dockerfile.opt","w") as updated_file:
+            updated_file.write("\n".join("" if x.key == "<" else x for x in self.dockerfile))
+
+        print("\nUpdated list of istructions saved at Dockerfile.opt")
 
     def format(self,**kwargs):
         if "title" not in kwargs:
@@ -176,7 +182,7 @@ class Inspector():
             pass
         message = bcolors.WARNING+"\n===> " + str(kwargs["title"]) + bcolors.ENDC
         if "id" in kwargs:
-            message += "(line "+str(kwargs["id"]+1)+")!"+bcolors.ENDC
+            message += "(# "+str(kwargs["id"])+")!"+bcolors.ENDC
         if "original" in kwargs and "optimization" in kwargs:
             message += "\nInstruction: " + str(kwargs["original"]) +"\n"
         if "explanation" in kwargs:
